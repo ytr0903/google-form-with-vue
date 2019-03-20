@@ -54,6 +54,8 @@ Google Formで作成したフォームを、iframeなどを使わずに簡単に
 
 ## オプション
 
+記入例は[src/vue-gf-data.js](src/vue-gf-data.js)をダウンロードして書き換えてください。
+
 ### doc（必須）
 
 form action="`https://docs.google.com/forms/d/e/*******/formResponse`"をコピー
