@@ -8,31 +8,22 @@ Vue.component('gf_box', {
   inject: ['$validator'], //Validetaionを共有
   data: function () {
     if(this.item.questiontype == 'checkbox'){
-      this.item.initialvalue = (this.item.options.length > 1) ? [] : false
+      this.item.initialvalue = Array.isArray(this.item.options) ? [] : false
     }
     return {
       PulldownInitialMessage: '選択してください',
-      inputvalue: this.item.initialvalue ? this.item.initialvalue : null,
-      inputfreeanswer: '',
-      inputfreeanswer_boolean: false
+      inputvalue: this.item.initialvalue ? this.item.initialvalue : null
     }
   },
   computed: {
-    submitvalue: function() {
-      if(this.item.questiontype === 'checkbox' && this.item.options.length > 1) {
-        var newinputvalue = this.inputvalue.concat()
-        .join(',') // 自由記述回答を追加してカンマ区切りに整形
-        .replace('__other_option__',this.inputfreeanswer); // 自由回答の文字列を置換
-        return newinputvalue
-      } else {
-        return this.inputvalue
-      }
-    },
     options_with_freeanswer: function() {
-      if(this.item.freeanswer && this.item.questiontype === 'checkbox') {
-        return this.item.options.concat(['__other_option__'])
+      var options = this.item.options
+      if(this.item.freeanswer && Array.isArray(options)) {
+        return options.concat(['__other_option__'])
+      } else if(!Array.isArray(options)){
+        return [options]
       } else {
-        return this.item.options
+        return options
       }
     }
   },
@@ -41,22 +32,23 @@ Vue.component('gf_box', {
       var target = document.getElementById(id);
       if(!target.checked) target.click() // IDのclick
     },
-    focus: function(text, checkbox) {
-      if(checkbox && document.getElementById(checkbox).checked) {
-        document.getElementById(text).focus()
-      } else {
-        document.getElementById(text).focus()
+    focus: function(textid, checkboxid) {
+      if(!checkboxid) {
+        document.getElementById(textid).focus()
+      } else if(document.getElementById(checkboxid).checked){
+        document.getElementById(textid).focus()
       }
     } 
   },
   template: /*html*/`
-  <div class="form-group" :class="{'has-error': errors.has(item.label ? item.label : 'q'+index) || errors.has('q'+index+'_freeanswer')}">
-    <label class="form-label" :for="item.label ? item.label : 'q'+index" v-html="item.question"></label>
+  <div class="form-group" :class="{'has-error': errors.has('entry.'+item.name) || errors.has('entry.'+item.name+'.other_option_response')}">
+    <label class="form-label" :for="'entry.'+item.name" v-html="item.question"></label>
     <template v-if="item.questiontype === 'text'">
       <input
       class="form-input"
-      :type="item.questiontype"
-      :name="item.label ? item.label : 'q'+index" :data-vv-as="item.question"
+      type="text"
+      :area-label="item.question"
+      :name="'entry.'+item.name" :data-vv-as="item.question"
       v-model="inputvalue"
       v-validate="item.validate === true ? 'required' : item.validate"
       :placeholder="item.placeholder ? item.placeholder : ''">
@@ -64,48 +56,43 @@ Vue.component('gf_box', {
     <template v-else-if="item.questiontype === 'textarea'">
       <textarea
       class="form-input"
-      :name="'q'+index" :data-vv-as="item.question"
+      :name="'entry.'+item.name" :data-vv-as="item.question"
       v-model="inputvalue"
       v-validate="item.validate === true ? 'required' : item.validate"
       :placeholder="item.placeholder ? item.placeholder : ''">
       </textarea>
     </template>
     <template v-else-if="item.questiontype === 'radio'">
-      <div class="input-group" v-for="option in item.options">
-        <label class="form-radio">
+      <div class="input-group" v-for="(option, ansnum) in options_with_freeanswer">
+        <label
+        class="form-radio"
+        @click="if(option === '__other_option__') focus('entry.'+item.name+'.other_option_response')">
           <input
           type="radio"
-          :name="'q'+index" :data-vv-as="item.question"
+          :id="'q'+index+'_a'+ansnum"
+          :name="'entry.'+item.name" :data-vv-as="item.question"
           :value="option"
           v-model="inputvalue"
           v-validate="item.validate === true ? 'required' : item.validate">
           <i class="form-icon"></i>
-          <span>{{option}}</span>
+          <span>{{option !== '__other_option__' ? option : item.freeanswer}}</span>
         </label>
-      </div>
-      <div class="input-group" v-if="item.freeanswer" @click="focus('q'+index+'_freeanswer')">
-        <label class="form-radio">
-          <input
-          type="radio"
-          :name="'q'+index" :data-vv-as="item.question"
-          :value="inputfreeanswer"
-          v-model="inputvalue"
-          v-validate="item.validate === true ? 'required' : item.validate">
-          <i class="form-icon"></i>
-          <span>
-            {{item.freeanswer}}
-          </span>
-        </label>
-        <input type="text" :id="'q'+index+'_freeanswer'" class="form-input" v-model="inputfreeanswer" @click="inputvalue = inputfreeanswer" @input="inputvalue = inputfreeanswer">
+        <input
+        v-if="option === '__other_option__'"
+        type="text" class="form-input"
+        :id="'entry.'+item.name+'.other_option_response'"
+        :name="'entry.'+item.name+'.other_option_response'" :data-vv-as="item.question"
+        v-validate="(item.validate === true ? 'required' : item.validate) && inputvalue == '__other_option__' ? 'required' : false"
+        @input="check('q'+index+'_a'+ansnum)" @click="check('q'+index+'_a'+ansnum)">
       </div>
     </template>
     <template v-else-if="item.questiontype === 'checkbox'">
       <div class="input-group" v-for="(option, ansnum) in options_with_freeanswer">
-        <label :class="item.options.length == 1 ? 'form-switch' : 'form-checkbox'">
+        <label :class="Array.isArray(item.options) ? 'form-checkbox' : 'form-switch'">
           <input
           type="checkbox" :id="'q'+index+'_a'+ansnum"
-          :name="'q'+index" :data-vv-as="item.question"
-          :value="option"
+          :name="'entry.'+item.name" :data-vv-as="item.question"
+          :value="Array.isArray(item.options) ? option : true"
           v-model="inputvalue"
           v-validate="item.validate === true ? 'required' : item.validate"
           @click="if(option === '__other_option__') focus('q'+index+'_freeanswer', 'q'+index+'_a'+ansnum)">
@@ -115,24 +102,25 @@ Vue.component('gf_box', {
         <input
         v-if="option === '__other_option__'"
         type="text" class="form-input"
-        :id="'q'+index+'_freeanswer'" :name="'q'+index+'_freeanswer'" :data-vv-as="item.question"
-        v-model="inputfreeanswer"
-        v-validate="inputvalue.includes(option) ? 'required' : false" @input="check('q'+index+'_a'+ansnum)">
+        :id="'q'+index+'_freeanswer'"
+        :name="'entry.'+item.name+'.other_option_response'" :data-vv-as="item.question"
+        v-validate="(item.validate === true ? 'required' : item.validate) && inputvalue.includes('__other_option__') ? 'required' : false"
+        @input="check('q'+index+'_a'+ansnum)" @click="check('q'+index+'_a'+ansnum)">
       </div>
     </template>
     <template v-else-if="item.questiontype === 'pulldown'">
-      <select class="form-select" v-model="inputvalue" :name="item.label ? item.label : 'q'+index" :data-vv-as="item.question" v-validate="item.validate === true ? 'required' : item.validate">
+      <select class="form-select" v-model="inputvalue"
+      :name="'entry.'+item.name" :data-vv-as="item.question"
+      v-validate="item.validate === true ? 'required' : item.validate">
         <option disabled value="">{{PulldownInitialMessage}}</option>
         <option v-for="(option, index) in item.options" :value="option">{{option}}</option>
       </select>
     </template>
-
-    <input type="hidden" :name="'entry.'+item.name" :value="submitvalue">
-    <p v-if="errors.has(item.label ? item.label : 'q'+index)" class="form-input-hint">
-      {{ errors.first(item.label ? item.label : 'q'+index) }}
+    <p v-if="errors.has('entry.'+item.name)" class="form-input-hint">
+      {{ errors.first('entry.'+item.name) }}
     </p>
-    <p v-else-if="errors.has('q'+index+'_freeanswer')" class="form-input-hint">
-      {{ errors.first('q'+index+'_freeanswer') }}
+    <p v-else-if="errors.has('entry.'+item.name+'.other_option_response')" class="form-input-hint">
+      {{ errors.first('entry.'+item.name+'.other_option_response') }}
     </p>
   </div>`
 });
@@ -147,10 +135,10 @@ var app = new Vue({
     gf_submit: function() {
       this.$validator.validate().then(result => {
         if (!result) {
-          return false
+          return false;
         }
         document.gf_form.submit();
-        this.submitted = true;
+        this.submitted = true;  
       });
     }
   },

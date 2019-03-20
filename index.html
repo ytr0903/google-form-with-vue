@@ -12,12 +12,12 @@
   <main>
     <div id="app" class="container" v-cloak>
       <h2>お問い合わせ</h2>
-      <transition-group name="fade" tag="div">
-        <form key="1" id="vue-gf" v-show="!submitted" name="gf_form" method="POST" target="hidden_iframe" :action="gf_data.doc">
+      <transition-group name="fade" tag="div" mode="out-in">
+        <form key="1" id="vue-gf" v-show="!submitted" name="gf_form" method="POST" target="hidden_iframe" :action="gf_data.doc" @submit.prevent="gf_submit()">
           <template v-for="(item, index) in gf_data.survey">
             <gf_box :item="item" :index="index"></gf_box>
           </template>
-          <button class="btn btn-primary input-group-btn btn-lg" @click="gf_submit">送信する</button>        
+          <button class="btn btn-primary input-group-btn btn-lg">送信する</button>        
         </form>
         <div key="2" v-show="submitted">
           <p>
@@ -28,8 +28,8 @@
       </transition-group>
     </div>
   </main>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.6.7/dist/vue.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vee-validate@latest/dist/vee-validate.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.6.7/dist/vue.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vee-validate@latest/dist/vee-validate.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vee-validate@2.1.7/dist/locale/ja.js"></script>
 <script type="text/javascript" src="src/vue-gf-data.js"></script>
 <script type="text/javascript" src="src/vue-gf.js"></script>

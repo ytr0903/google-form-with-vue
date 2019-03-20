@@ -33,7 +33,7 @@ form action="`https://docs.google.com/forms/d/e/*******/formResponse`"部分を�
 - text …… 1行入力
 - textarea …… 複数行入力
 - radio …… ラジオボタン
-- checkbox …… チェックボックス（選択肢が1つだけならboolean値を送信）
+- checkbox …… チェックボックス（選択肢が配列ではなく文字列であれば、boolean値を送信）
 - pulldown …… プルダウン
 
 ### label（任意）
@@ -43,6 +43,8 @@ email, username などの属性を指定することで、ブラウザの補完�
 ### options（radio、checkbox、pulldownで必須）
 
 回答の選択肢。配列形式で入力。
+
+checkboxに限り、配列ではなく文字列を記入することでboolean値を送信できる。
 
 ### freeanswer（任意）
 
@@ -54,7 +56,7 @@ placeholderで表示するテキスト。
 
 ### initialvalue（任意）
 
-初期値
+初期値。チェックボックスでの動作は未検証。
 
 ### validate（任意）
 
