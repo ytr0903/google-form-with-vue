@@ -1,4 +1,4 @@
-var gf_data = {
+app.formdata = {
   doc: 'https://docs.google.com/forms/d/e/1FAIpQLSdxpTP4BSFP5BhEs9Fr9naq0Qn_dlpsdOt30m198NaJ1k_5fA/formResponse',
   survey: [
     {

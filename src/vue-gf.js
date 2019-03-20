@@ -128,7 +128,7 @@ Vue.component('gf_box', {
 var app = new Vue({
   el: '#app',
   data: {
-    gf_data,
+    formdata: {},
     submitted: false
   },
   methods: {

@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Google Form with Vue.js</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Noto+Sans+JP|Roboto">
 <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
 <link rel="stylesheet" href="src/style.css" media="all">
 </head>
@@ -13,8 +12,8 @@
     <div id="app" class="container" v-cloak>
       <h2>お問い合わせ</h2>
       <transition-group name="fade" tag="div" mode="out-in">
-        <form key="1" id="vue-gf" v-show="!submitted" name="gf_form" method="POST" target="hidden_iframe" :action="gf_data.doc" @submit.prevent="gf_submit()">
-          <template v-for="(item, index) in gf_data.survey">
+        <form key="1" id="vue-gf" v-show="!submitted" name="gf_form" method="POST" target="hidden_iframe" :action="formdata.doc" @submit.prevent="gf_submit()">
+          <template v-for="(item, index) in formdata.survey">
             <gf_box :item="item" :index="index"></gf_box>
           </template>
           <button class="btn btn-primary input-group-btn btn-lg">送信する</button>        
@@ -31,7 +30,7 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.6.7/dist/vue.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vee-validate@latest/dist/vee-validate.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vee-validate@2.1.7/dist/locale/ja.js"></script>
-<script type="text/javascript" src="src/vue-gf-data.js"></script>
 <script type="text/javascript" src="src/vue-gf.js"></script>
+<script type="text/javascript" src="src/vue-gf-data.js"></script>
 </body>
 </html>

@@ -9,7 +9,7 @@ Google Formをなるべく簡単にサイト内に埋め込むためのテンプ
 ## 使い方
 
 1. Google Formでフォームを作成
-1. name、actionをコピー
+1. フォーム画面からname, actionをコピー
 1. vue-gf-data.jsに設問・選択肢を入力
 
 ## オプション
