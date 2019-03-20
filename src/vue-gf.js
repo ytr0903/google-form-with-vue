@@ -150,6 +150,7 @@ var app = new Vue({
           return false
         }
         document.gf_form.submit();
+        this.submitted = true;
       });
     }
   },
