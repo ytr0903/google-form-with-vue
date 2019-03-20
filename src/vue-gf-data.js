@@ -1,12 +1,11 @@
 app.formdata = {
-  doc: 'https://docs.google.com/forms/d/e/1FAIpQLSdxpTP4BSFP5BhEs9Fr9naq0Qn_dlpsdOt30m198NaJ1k_5fA/formResponse',
+  doc: 'https://docs.google.com/forms/d/e/*******/formResponse',
   survey: [
     {
       name: 971087384,
       question: '名前',
       questiontype: 'text',
       label: 'username',
-      placeholder: '山田太郎',
       validate: true
     },
     {

@@ -3,16 +3,14 @@ Vue.use(VeeValidate, {
   events: 'input|blur|focus'
 });
 
-Vue.component('gf_box', {
+Vue.component('listitem', {
   props: ['item','index'],
   inject: ['$validator'], //Validetaionを共有
   data: function () {
-    if(this.item.questiontype == 'checkbox'){
-      this.item.initialvalue = Array.isArray(this.item.options) ? [] : false
-    }
     return {
       PulldownInitialMessage: '選択してください',
-      inputvalue: this.item.initialvalue ? this.item.initialvalue : null
+      inputvalue: this.item.initialvalue ? this.item.initialvalue : null,
+      inputvalues: Array.isArray(this.item.options) ? [] : false
     }
   },
   computed: {
@@ -33,33 +31,31 @@ Vue.component('gf_box', {
       if(!target.checked) target.click() // IDのclick
     },
     focus: function(textid, checkboxid) {
-      if(!checkboxid) {
-        document.getElementById(textid).focus()
-      } else if(document.getElementById(checkboxid).checked){
+      if(!checkboxid || document.getElementById(checkboxid).checked) {
         document.getElementById(textid).focus()
       }
-    } 
+    }
   },
   template: /*html*/`
   <div class="form-group" :class="{'has-error': errors.has('entry.'+item.name) || errors.has('entry.'+item.name+'.other_option_response')}">
-    <label class="form-label" :for="'entry.'+item.name" v-html="item.question"></label>
+    <label class="form-label" :for="'entry.'+item.name">{{item.question}}</label>
     <template v-if="item.questiontype === 'text'">
       <input
       class="form-input"
       type="text"
       :area-label="item.question"
-      :name="'entry.'+item.name" :data-vv-as="item.question"
+      :id="'entry.'+item.name" :name="'entry.'+item.name" :data-vv-as="item.question"
       v-model="inputvalue"
       v-validate="item.validate === true ? 'required' : item.validate"
-      :placeholder="item.placeholder ? item.placeholder : ''">
+      :placeholder="item.placeholder">
     </template>
     <template v-else-if="item.questiontype === 'textarea'">
       <textarea
       class="form-input"
-      :name="'entry.'+item.name" :data-vv-as="item.question"
+      :id="'entry.'+item.name" :name="'entry.'+item.name" :data-vv-as="item.question"
       v-model="inputvalue"
       v-validate="item.validate === true ? 'required' : item.validate"
-      :placeholder="item.placeholder ? item.placeholder : ''">
+      :placeholder="item.placeholder">
       </textarea>
     </template>
     <template v-else-if="item.questiontype === 'radio'">
@@ -92,8 +88,8 @@ Vue.component('gf_box', {
           <input
           type="checkbox" :id="'q'+index+'_a'+ansnum"
           :name="'entry.'+item.name" :data-vv-as="item.question"
-          :value="Array.isArray(item.options) ? option : true"
-          v-model="inputvalue"
+          :value="Array.isArray(item.options) ? option : inputvalues"
+          v-model="inputvalues"
           v-validate="item.validate === true ? 'required' : item.validate"
           @click="if(option === '__other_option__') focus('q'+index+'_freeanswer', 'q'+index+'_a'+ansnum)">
           <i class="form-icon"></i>
@@ -104,23 +100,21 @@ Vue.component('gf_box', {
         type="text" class="form-input"
         :id="'q'+index+'_freeanswer'"
         :name="'entry.'+item.name+'.other_option_response'" :data-vv-as="item.question"
-        v-validate="(item.validate === true ? 'required' : item.validate) && inputvalue.includes('__other_option__') ? 'required' : false"
+        v-validate="item.validate && inputvalues.includes('__other_option__') ? 'required' : false"
         @input="check('q'+index+'_a'+ansnum)" @click="check('q'+index+'_a'+ansnum)">
       </div>
     </template>
     <template v-else-if="item.questiontype === 'pulldown'">
       <select class="form-select" v-model="inputvalue"
-      :name="'entry.'+item.name" :data-vv-as="item.question"
+      :id="'entry.'+item.name" :name="'entry.'+item.name" :data-vv-as="item.question"
       v-validate="item.validate === true ? 'required' : item.validate">
         <option disabled value="">{{PulldownInitialMessage}}</option>
         <option v-for="(option, index) in item.options" :value="option">{{option}}</option>
       </select>
     </template>
-    <p v-if="errors.has('entry.'+item.name)" class="form-input-hint">
-      {{ errors.first('entry.'+item.name) }}
-    </p>
-    <p v-else-if="errors.has('entry.'+item.name+'.other_option_response')" class="form-input-hint">
-      {{ errors.first('entry.'+item.name+'.other_option_response') }}
+    <p v-if="errors.has('entry.'+item.name) || errors.has('entry.'+item.name+'.other_option_response')"" class="form-input-hint">
+      <template v-if="errors.has('entry.'+item.name)">{{ errors.first('entry.'+item.name) }}</template>
+      <template v-else>{{ errors.first('entry.'+item.name+'.other_option_response') }}</template>
     </p>
   </div>`
 });

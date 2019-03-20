@@ -1,1 +1,23 @@
-﻿html,body{font-weight:500;font-family:"游ゴシック", YuGothic, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif}main{max-width:1080px;padding:30px 0;margin:0 auto}main #app[v-cloak]{opacity:0}main .fade-enter-active,main .fade-leave-active{transition:opacity .5s}main .fade-enter,main .fade-leave-to{opacity:0}
+@charset "UTF-8";
+html {
+  font-weight: 500;
+  font-family: "游ゴシック", YuGothic, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
+}
+
+main {
+  max-width: 1080px;
+  padding: 30px 0;
+  margin: 0 auto;
+}
+
+main #app[v-cloak] {
+  opacity: 0;
+}
+
+main .fade-enter-active, main .fade-leave-active {
+  transition: opacity .5s;
+}
+
+main .fade-enter, main .fade-leave-to {
+  opacity: 0;
+}
